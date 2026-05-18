@@ -1,0 +1,7 @@
+# Core dependency — used by build_hwpx.py, validate.py, analyze_template.py,
+# page_guard.py, table_builder.py, preview_table.py, office/unpack.py, office/pack.py
+lxml>=4.6
+
+# Optional — only scripts/text_extract.py imports it (HWPX text extraction).
+# Safe to skip if you don't need text extraction.
+python-hwpx

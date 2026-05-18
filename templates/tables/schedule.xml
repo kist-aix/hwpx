@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<table-template xmlns:hp="http://www.hancom.co.kr/hwpml/2011/paragraph">
+  <meta>
+    <name>schedule</name>
+    <description>일정표: 기간/추진내용/세부사항/담당 (4열)</description>
+    <table-width>45585</table-width>
+    <row-height header="2363" body="1984" summary="2363"/>
+    <styles>
+      <table-border borderFillIDRef="4"/>
+      <header-cell borderFillIDRef="9" charPrIDRef="26" paraPrIDRef="18"/>
+      <body-cell borderFillIDRef="10" charPrIDRef="27" paraPrIDRef="18"/>
+      <summary-cell borderFillIDRef="9" charPrIDRef="26" paraPrIDRef="18"/>
+    </styles>
+    <columns>
+      <col index="0" width="9125" align="center"/>
+      <col index="1" width="13688" align="justify"/>
+      <col index="2" width="13688" align="justify"/>
+      <col index="3" width="9084" align="center"/>
+    </columns>
+  </meta>
+  <sample>
+    <hp:tbl id="__TBL_ID__" zOrder="0" numberingType="TABLE" textWrap="TOP_AND_BOTTOM" textFlow="BOTH_SIDES" lock="0" dropcapstyle="None" pageBreak="CELL" repeatHeader="1" rowCnt="__ROW_CNT__" colCnt="4" cellSpacing="0" borderFillIDRef="4" noAdjust="1">
+      <hp:sz width="45585" widthRelTo="ABSOLUTE" height="__TBL_HEIGHT__" heightRelTo="ABSOLUTE" protect="0"/>
+      <hp:pos treatAsChar="1" affectLSpacing="0" flowWithText="1" allowOverlap="0" holdAnchorAndSO="0" vertRelTo="PARA" horzRelTo="PARA" vertAlign="TOP" horzAlign="LEFT" vertOffset="0" horzOffset="0"/>
+      <hp:outMargin left="141" right="141" top="141" bottom="141"/>
+      <hp:inMargin left="0" right="0" top="0" bottom="0"/>
+      <hp:tr row-type="header">
+        <hp:tc name="" header="0" hasMargin="1" protect="0" editable="0" dirty="0" borderFillIDRef="9">
+          <hp:subList id="" textDirection="HORIZONTAL" lineWrap="BREAK" vertAlign="CENTER" linkListIDRef="0" linkListNextIDRef="0" textWidth="0" textHeight="0" hasTextRef="0" hasNumRef="0">
+            <hp:p id="__P_ID__" paraPrIDRef="18" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">
+              <hp:run charPrIDRef="26"><hp:t>기간</hp:t></hp:run></hp:p>
+          </hp:subList>
+          <hp:cellAddr colAddr="0" rowAddr="0"/><hp:cellSpan colSpan="1" rowSpan="1"/>
+          <hp:cellSz width="9125" height="2363"/><hp:cellMargin left="73" right="73" top="73" bottom="141"/>
+        </hp:tc>
+        <hp:tc name="" header="0" hasMargin="1" protect="0" editable="0" dirty="0" borderFillIDRef="9">
+          <hp:subList id="" textDirection="HORIZONTAL" lineWrap="BREAK" vertAlign="CENTER" linkListIDRef="0" linkListNextIDRef="0" textWidth="0" textHeight="0" hasTextRef="0" hasNumRef="0">
+            <hp:p id="__P_ID__" paraPrIDRef="18" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">
+              <hp:run charPrIDRef="26"><hp:t>추진내용</hp:t></hp:run></hp:p>
+          </hp:subList>
+          <hp:cellAddr colAddr="1" rowAddr="0"/><hp:cellSpan colSpan="1" rowSpan="1"/>
+          <hp:cellSz width="13688" height="2363"/><hp:cellMargin left="73" right="73" top="73" bottom="141"/>
+        </hp:tc>
+        <hp:tc name="" header="0" hasMargin="1" protect="0" editable="0" dirty="0" borderFillIDRef="9">
+          <hp:subList id="" textDirection="HORIZONTAL" lineWrap="BREAK" vertAlign="CENTER" linkListIDRef="0" linkListNextIDRef="0" textWidth="0" textHeight="0" hasTextRef="0" hasNumRef="0">
+            <hp:p id="__P_ID__" paraPrIDRef="18" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">
+              <hp:run charPrIDRef="26"><hp:t>세부사항</hp:t></hp:run></hp:p>
+          </hp:subList>
+          <hp:cellAddr colAddr="2" rowAddr="0"/><hp:cellSpan colSpan="1" rowSpan="1"/>
+          <hp:cellSz width="13688" height="2363"/><hp:cellMargin left="73" right="73" top="73" bottom="141"/>
+        </hp:tc>
+        <hp:tc name="" header="0" hasMargin="1" protect="0" editable="0" dirty="0" borderFillIDRef="9">
+          <hp:subList id="" textDirection="HORIZONTAL" lineWrap="BREAK" vertAlign="CENTER" linkListIDRef="0" linkListNextIDRef="0" textWidth="0" textHeight="0" hasTextRef="0" hasNumRef="0">
+            <hp:p id="__P_ID__" paraPrIDRef="18" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">
+              <hp:run charPrIDRef="26"><hp:t>담당</hp:t></hp:run></hp:p>
+          </hp:subList>
+          <hp:cellAddr colAddr="3" rowAddr="0"/><hp:cellSpan colSpan="1" rowSpan="1"/>
+          <hp:cellSz width="9084" height="2363"/><hp:cellMargin left="73" right="73" top="73" bottom="141"/>
+        </hp:tc>
+      </hp:tr>
+      <hp:tr row-type="body">
+        <hp:tc name="" header="0" hasMargin="1" protect="0" editable="0" dirty="0" borderFillIDRef="10">
+          <hp:subList id="" textDirection="HORIZONTAL" lineWrap="BREAK" vertAlign="CENTER" linkListIDRef="0" linkListNextIDRef="0" textWidth="0" textHeight="0" hasTextRef="0" hasNumRef="0">
+            <hp:p id="__P_ID__" paraPrIDRef="18" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">
+              <hp:run charPrIDRef="27"><hp:t/></hp:run></hp:p>
+          </hp:subList>
+          <hp:cellAddr colAddr="0" rowAddr="__ROW_ADDR__"/><hp:cellSpan colSpan="1" rowSpan="1"/>
+          <hp:cellSz width="9125" height="1984"/><hp:cellMargin left="73" right="73" top="73" bottom="141"/>
+        </hp:tc>
+        <hp:tc name="" header="0" hasMargin="1" protect="0" editable="0" dirty="0" borderFillIDRef="10">
+          <hp:subList id="" textDirection="HORIZONTAL" lineWrap="BREAK" vertAlign="CENTER" linkListIDRef="0" linkListNextIDRef="0" textWidth="0" textHeight="0" hasTextRef="0" hasNumRef="0">
+            <hp:p id="__P_ID__" paraPrIDRef="22" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">
+              <hp:run charPrIDRef="27"><hp:t/></hp:run></hp:p>
+          </hp:subList>
+          <hp:cellAddr colAddr="1" rowAddr="__ROW_ADDR__"/><hp:cellSpan colSpan="1" rowSpan="1"/>
+          <hp:cellSz width="13688" height="1984"/><hp:cellMargin left="73" right="73" top="73" bottom="141"/>
+        </hp:tc>
+        <hp:tc name="" header="0" hasMargin="1" protect="0" editable="0" dirty="0" borderFillIDRef="10">
+          <hp:subList id="" textDirection="HORIZONTAL" lineWrap="BREAK" vertAlign="CENTER" linkListIDRef="0" linkListNextIDRef="0" textWidth="0" textHeight="0" hasTextRef="0" hasNumRef="0">
+            <hp:p id="__P_ID__" paraPrIDRef="22" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">
+              <hp:run charPrIDRef="27"><hp:t/></hp:run></hp:p>
+          </hp:subList>
+          <hp:cellAddr colAddr="2" rowAddr="__ROW_ADDR__"/><hp:cellSpan colSpan="1" rowSpan="1"/>
+          <hp:cellSz width="13688" height="1984"/><hp:cellMargin left="73" right="73" top="73" bottom="141"/>
+        </hp:tc>
+        <hp:tc name="" header="0" hasMargin="1" protect="0" editable="0" dirty="0" borderFillIDRef="10">
+          <hp:subList id="" textDirection="HORIZONTAL" lineWrap="BREAK" vertAlign="CENTER" linkListIDRef="0" linkListNextIDRef="0" textWidth="0" textHeight="0" hasTextRef="0" hasNumRef="0">
+            <hp:p id="__P_ID__" paraPrIDRef="18" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">
+              <hp:run charPrIDRef="27"><hp:t/></hp:run></hp:p>
+          </hp:subList>
+          <hp:cellAddr colAddr="3" rowAddr="__ROW_ADDR__"/><hp:cellSpan colSpan="1" rowSpan="1"/>
+          <hp:cellSz width="9084" height="1984"/><hp:cellMargin left="73" right="73" top="73" bottom="141"/>
+        </hp:tc>
+      </hp:tr>
+    </hp:tbl>
+  </sample>
+</table-template>
