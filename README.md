@@ -13,19 +13,19 @@
 
 ## 설치
 
-> Claude Code 등 agent에게 GitHub URL(`https://github.com/mskim8717/hwpx`)만 주고 "이거 설치해줘"라고 부탁하면, agent가 아래 절차를 따라 설치합니다. 사용자가 직접 실행해도 동일합니다.
+> Claude Code 등 agent에게 GitHub URL(`https://github.com/kist-aix/hwpx`)만 주고 "이거 설치해줘"라고 부탁하면, agent가 아래 절차를 따라 설치합니다. 사용자가 직접 실행해도 동일합니다.
 
 ### 사용자 전역 스킬로 설치 (모든 프로젝트에서 사용 — 권장)
 
 ```bash
-git clone --depth 1 https://github.com/mskim8717/hwpx.git ~/.claude/skills/hwpx
+git clone --depth 1 https://github.com/kist-aix/hwpx.git ~/.claude/skills/hwpx
 python3 -m pip install --user -r ~/.claude/skills/hwpx/requirements.txt
 ```
 
 ### 현재 프로젝트 전용 스킬로 설치
 
 ```bash
-git clone --depth 1 https://github.com/mskim8717/hwpx.git .claude/skills/hwpx
+git clone --depth 1 https://github.com/kist-aix/hwpx.git .claude/skills/hwpx
 python3 -m pip install --user -r .claude/skills/hwpx/requirements.txt
 ```
 
