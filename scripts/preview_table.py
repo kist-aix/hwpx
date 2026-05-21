@@ -22,6 +22,8 @@ from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 SKILL_DIR = SCRIPT_DIR.parent
+# 모든 미리보기 .hwpx는 현재 작업 디렉터리의 output/ 에 저장 (SKILL.md 「결과 저장 위치」)
+OUTPUT_DIR = Path("output")
 
 sys.path.insert(0, str(SCRIPT_DIR))
 
@@ -55,16 +57,16 @@ SAMPLE_DATA = {
     },
     "schedule": {
         "data": [
-            ["3월 1주", "사전준비", "검진기관 선정 및 계약 체결", "인사부"],
-            ["3월 4주", "대상자 안내", "부서별 일정 배정 및 직원 개별 안내", "인사부"],
-            ["4~5월", "검진 실시", "본사 및 지사 직원 건강검진", "검진기관"],
+            ["‘26.05.01", "검진기관 선정 및 계약 체결", "인사부"],
+            ["‘26.05.10", "부서별 일정 배정 및 직원 개별 안내", "인사부"],
+            ["‘26.06.01", "본사 및 지사 직원 건강검진", "검진기관"],
         ],
     },
     "checklist": {
         "data": [
-            ["1", "서류 확인", "신청서 및 첨부서류 구비 여부", "담당자", "-"],
-            ["2", "예산 확인", "배정 예산 범위 내 집행 여부", "재무팀", "-"],
-            ["3", "결재 확인", "결재권자 승인 완료 여부", "담당자", "-"],
+            ["1", "신청서 및 첨부서류 구비 여부", "담당자", "완료", "-"],
+            ["2", "배정 예산 범위 내 집행 여부", "재무팀", "완료", "-"],
+            ["3", "결재권자 승인 완료 여부", "담당자", "완료", "-"],
         ],
     },
 }
@@ -140,6 +142,7 @@ def preview_single(template_name: str, output_path: Path) -> None:
     """단일 템플릿 미리보기 HWPX 생성."""
     import tempfile
 
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     section_xml = build_preview_section(template_name)
 
     with tempfile.NamedTemporaryFile(
@@ -173,7 +176,7 @@ def main() -> None:
     parser.add_argument(
         "--output", "-o",
         type=Path,
-        help="출력 .hwpx 파일 경로 (기본: {템플릿명}_preview.hwpx)",
+        help="출력 .hwpx 파일 경로 (기본: output/{템플릿명}_preview.hwpx)",
     )
     parser.add_argument(
         "--all",
@@ -197,7 +200,7 @@ def main() -> None:
     if args.all:
         templates = list_templates()
         for name, desc in templates:
-            output = SKILL_DIR / f"{name}_preview.hwpx"
+            output = OUTPUT_DIR / f"{name}_preview.hwpx"
             print(f"생성 중: {name} → {output.name}")
             try:
                 preview_single(name, output)
@@ -209,7 +212,7 @@ def main() -> None:
         parser.print_help()
         sys.exit(1)
 
-    output = args.output or SKILL_DIR / f"{args.template}_preview.hwpx"
+    output = args.output or OUTPUT_DIR / f"{args.template}_preview.hwpx"
     preview_single(args.template, output)
 
 

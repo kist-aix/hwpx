@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+
+# 가상환경
+.venv/
+venv/
+
+# 스킬 생성 결과물 (build_hwpx.py·preview_table.py 등의 .hwpx 출력)
+output/
+
+# macOS
+.DS_Store
+
+# 에디터·IDE
+.vscode/
+.idea/
+*.swp

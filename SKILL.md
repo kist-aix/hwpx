@@ -74,7 +74,9 @@ hwpx/
 │   ├── build_hwpx.py                     # report 템플릿 + XML → .hwpx 조립 (핵심)
 │   ├── table_builder.py                  # 표 템플릿 → XML 생성
 │   ├── preview_table.py                  # 표 템플릿 + 샘플 데이터 → 미리보기 .hwpx
+│   ├── extract_table_templates.py        # 표 라이브러리 HWPX → 표 템플릿 .xml 재생성
 │   ├── validate.py                       # HWPX 구조 검증
+│   ├── style_check.py                    # 개조식 문체 규칙 검사 (□/❍ 길이·종결)
 │   └── text_extract.py                   # 텍스트 추출 (python-hwpx 필요)
 ├── templates/
 │   ├── base/                             # 내부 스켈레톤 (mimetype, META-INF, content.hpf 등 — build_hwpx.py가 자동 사용)
@@ -83,11 +85,11 @@ hwpx/
 │       ├── basic.xml                     # 기본 표 (4열: 연번/구분/내용/비고)
 │       ├── status.xml                    # 현황표 (4열: 번호/항목/추진현황/진행률)
 │       ├── budget.xml                    # 예산표 (5열, 합계행 포함)
-│       ├── schedule.xml                  # 일정표 (4열: 기간/추진내용/세부사항/담당)
+│       ├── schedule.xml                  # 일정표 (3열: 일자/추진내용/담당)
 │       └── checklist.xml                 # 점검표 (5열: 번호/점검항목/담당/확인/비고)
 ├── assets/
 │   ├── report-template.hwpx              # report 템플릿 시각 기준 샘플 (런타임 미사용)
-│   └── all_tables_preview.hwpx           # 표 템플릿(tables/) 5종 종합 미리보기 (런타임 미사용)
+│   └── all_tables_preview.hwpx           # 표 라이브러리 — extract_table_templates.py의 추출 소스
 └── references/
     └── hwpx-format.md                    # OWPML XML 요소 레퍼런스
 ```
@@ -107,10 +109,22 @@ hwpx/
 - 템플릿의 section0.xml은 "어떤 스타일 ID를 어떤 용도로 쓰는지" 보여주는 **서식 참고용**이다
 - 템플릿의 문단 수, 표 행 수, 섹션 수를 그대로 따르지 않는다
 - 내용이 5개 섹션이면 5개를 만들고, 표가 10행이면 10행으로 만든다
-- **본문 최소 글자 수**: □/❍ 항목 등 본문 텍스트는 한 줄에 20자 이상 작성한다. 너무 짧은 문구는 보고서 품질을 떨어뜨린다
+- **본문 문체·분량**: □/❍ 본문의 줄 길이와 문장 종결은 아래 「본문 문체 규칙」 절을 따른다 (□ 줄은 30~35자, ❍ 줄은 65~70자, 명사형 종결)
 - **표 빈 셀 금지**: 표의 모든 셀에 반드시 내용을 채운다. 빈 문자열("") 대신 "-" 또는 적절한 값 사용
 - **표 열 폭 조정**: 각 셀에 들어가는 글자 수를 고려하여 열 너비를 조정한다. 내용이 긴 열은 넓게, 짧은 열(번호, 확인 등)은 좁게 설정
 - **표 밀도 제한**: 한 페이지에 표는 최대 1개만 배치한다. 표가 여러 개 필요하면 본문 텍스트로 충분히 간격을 두거나 페이지를 분리한다
+
+### 본문 문체 규칙 (개조식 작성)
+
+□/❍ 본문은 공공기관 보고서의 개조식 문체로 작성한다. 줄의 성격에 따라 길이와 종결을 다르게 한다.
+
+- **□ 상위 줄**: `□ ` 뒤 기준으로 공백·괄호·문장부호 포함 **30자 이상 35자 이내**로 쓴다. "□ 연구환경"처럼 내용 없는 단순 라벨로 두지 말고, 핵심을 압축한 한 줄 범주 문장으로 작성한다 — 세부 내용은 아래 ❍ 줄로 내린다
+- **□ 라벨형 줄 예외**: "□ 일시 : …", "□ 장소 : …"처럼 `라벨 : 값` 형식의 개요·항목 줄은 30자 하한을 적용하지 않는다 — 자연스러운 길이로 두고 억지로 늘리지 않는다 (35자 상한은 동일 적용)
+- **❍ 하위 줄**: □ 아래 ❍ 줄은 한국어 **65자 이상 70자 이내**(약 두 줄 분량)의 구체적 설명 문장으로 작성한다. 범위를 벗어나면 활동·대상·방법·산출 등 내용을 더하거나 덜어 분량을 맞춘다
+- **권장 종결**: 명사형 종결을 쓴다 — `~ 전환`, `~ 발전`, `~ 구축`, `~ 확대`, `~ 강화`, `~ 고도화`, `~ 확보`, `~ 운영`, `~ 추진` 등
+- **피해야 할 종결**: 최종 문체 점검 시 다음 종결은 피한다 — `~합니다`, `~습니다`, `~한다`, `~된다`, `~있다`, `~큼`, `~함`
+
+> 생성한 `.hwpx`는 `scripts/style_check.py`로 위 규칙(□ 길이·❍ 길이·종결) 준수 여부를 점검한다.
 
 ### 흐름
 
@@ -319,9 +333,11 @@ section0.xml의 첫 문단(`<hp:p>`)의 첫 런(`<hp:run>`)에 반드시 `<hp:se
 |--------|---------|--------|------|
 | `basic` | 연번/구분/내용/비고 (4열) | - | 범용 표 |
 | `status` | 번호/항목/추진현황/진행률 (4열) | - | 현황 보고 |
-| `budget` | 연번/사업명/내용/예산/비고 (5열) | ✓ | 예산 내역 |
-| `schedule` | 기간/추진내용/세부사항/담당 (4열) | - | 일정 계획 |
+| `budget` | 연번/사업명/내용/예산(백만원)/비고 (5열) | ✓ | 예산 내역 |
+| `schedule` | 일자/추진내용/담당 (3열) | - | 일정 계획 |
 | `checklist` | 번호/점검항목/담당/확인/비고 (5열) | - | 점검·체크리스트 |
+
+> 위 열 구성은 현재 `templates/tables/*.xml` 기준이며 `extract_table_templates.py`로 재생성하면 바뀔 수 있다. 최신 목록은 `table_builder.py --list`로 확인한다.
 
 ### Python API 사용법
 
@@ -371,6 +387,7 @@ python3 "$SKILL_DIR/scripts/table_builder.py" --template basic \
 - **합계행**: `summary` 파라미터는 budget처럼 summary row가 정의된 템플릿에서만 동작
 - **헤더 오버라이드**: `headers` 미지정 시 템플릿의 기본 헤더 텍스트 사용
 - **빈 셀 금지**: 모든 셀에 반드시 내용을 채운다. 빈 문자열("") 대신 "-" 또는 적절한 값 사용
+- **날짜 표기**: 표의 일자·날짜·기간 열은 `‘YY.MM.DD` 형식으로 작성한다 (예: `‘26.05.01`). 기간은 `‘26.05.01 ~ ‘26.06.30`처럼 쓴다. "3월 2주", "상반기" 같은 모호한 표기는 피한다
 
 ### 표 미리보기 (preview_table.py)
 
@@ -380,12 +397,34 @@ python3 "$SKILL_DIR/scripts/table_builder.py" --template basic \
 # 사용 가능한 표 템플릿 목록
 python3 "$SKILL_DIR/scripts/preview_table.py" --list
 
-# 단일 템플릿 미리보기
-python3 "$SKILL_DIR/scripts/preview_table.py" budget --output output/budget_preview.hwpx
+# 단일 템플릿 미리보기 (output/budget_preview.hwpx 로 저장)
+python3 "$SKILL_DIR/scripts/preview_table.py" budget
 
-# 전체 템플릿을 한 번에 미리보기 생성
+# 전체 템플릿을 한 번에 미리보기 생성 (모두 output/ 에 저장)
 python3 "$SKILL_DIR/scripts/preview_table.py" --all
 ```
+
+### 표 템플릿 추가·수정 (extract_table_templates.py)
+
+새 표 양식을 추가하거나 기존 표를 수정할 때는, 표를 모아 둔 **표 라이브러리 HWPX**(`assets/all_tables_preview.hwpx`)를 한글에서 편집한 뒤 이 스크립트로 `templates/tables/*.xml`을 다시 추출한다. XML을 직접 손대지 않고 한글에서 표를 디자인할 수 있다.
+
+```bash
+# 표 라이브러리 HWPX → templates/tables/*.xml 재생성
+python3 "$SKILL_DIR/scripts/extract_table_templates.py"
+
+# 다른 HWPX를 소스로 지정 / 미리보기만 / 사라진 템플릿 정리
+python3 "$SKILL_DIR/scripts/extract_table_templates.py" assets/my_tables.hwpx
+python3 "$SKILL_DIR/scripts/extract_table_templates.py" --dry-run
+python3 "$SKILL_DIR/scripts/extract_table_templates.py" --prune
+```
+
+**표 인식 규칙** — 각 표 바로 앞 문단에 `N. 이름 - 설명` 형식 라벨을 둔다(예: `4. schedule - 일정표 (일자/추진내용/담당)`). `이름`은 출력 파일명과 `<meta><name>`, `설명`은 `<meta><description>`가 된다. 1행은 머리행, 표 끝에서 머리행과 같은 셀 서식이 연속되는 행은 합계행, 나머지는 본문행으로 인식한다.
+
+**스타일 정규화 규칙 (필수)** — 추출 결과의 모든 `charPrIDRef`·`paraPrIDRef`·`borderFillIDRef`는 소스 한글파일이 아니라 **`templates/report/header.xml`의 표준 표 스타일로 자동 재매핑**된다 — 머리행 `26/18/9`, 본문행 `27/18·22/10`, 합계행 `26/18/9`, 컨테이너 `4`. 보고서는 항상 report 헤더와 함께 빌드되므로, 이 재매핑이 있어야 어떤 한글파일에서 뽑은 표든 글꼴·테두리가 깨지지 않는다. 표의 **구조**(열 수·너비·정렬·합계행)는 소스 그대로 유지되고 **색·글꼴**만 보고서 표준 표 서식으로 통일된다.
+
+> 추출 표 너비가 보고서 본문폭(`48190`)을 넘으면 경고가 출력된다 — 한글에서 열 너비를 줄여 다시 추출한다.
+
+> **셀 여백 주의** — 셀 안쪽 여백은 한글에서 *표/셀 속성 → 안 여백*으로 준다. *문단 모양 → 여백*으로 준 값은 `paraPr`(스타일)에 저장돼 정규화 때 사라진다. 구조 속성인 `<hp:cellMargin>`만 추출 시 보존된다.
 
 ---
 
@@ -517,9 +556,11 @@ python3 "$SKILL_DIR/scripts/validate.py" document.hwpx
 | `scripts/build_hwpx.py` | **핵심** — report 템플릿 + XML → HWPX 조립 |
 | `scripts/table_builder.py` | 표 템플릿 → 데이터 주입 → 표 XML 생성 |
 | `scripts/preview_table.py` | 표 템플릿 + 샘플 데이터 → 미리보기 .hwpx 생성 |
+| `scripts/extract_table_templates.py` | 표 라이브러리 HWPX → 표 템플릿 .xml 재생성 |
 | `scripts/office/unpack.py` | HWPX → 디렉토리 (XML pretty-print) |
 | `scripts/office/pack.py` | 디렉토리 → HWPX (mimetype first) |
 | `scripts/validate.py` | HWPX 파일 구조 검증 |
+| `scripts/style_check.py` | 개조식 문체 규칙 검사 (□/❍ 길이·종결) |
 | `scripts/text_extract.py` | HWPX 텍스트 추출 (python-hwpx 필요) |
 
 ## 단위 변환

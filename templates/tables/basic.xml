@@ -2,7 +2,7 @@
 <table-template xmlns:hp="http://www.hancom.co.kr/hwpml/2011/paragraph">
   <meta>
     <name>basic</name>
-    <description>기본 표: 회색 헤더, 흰색 본문 (4열: 연번/구분/내용/비고)</description>
+    <description>범용 표 (연번/구분/내용/비고)</description>
     <table-width>45585</table-width>
     <row-height header="2363" body="1984" summary="1984"/>
     <styles>
@@ -24,12 +24,13 @@
       <hp:pos treatAsChar="1" affectLSpacing="0" flowWithText="1" allowOverlap="0" holdAnchorAndSO="0" vertRelTo="PARA" horzRelTo="PARA" vertAlign="TOP" horzAlign="LEFT" vertOffset="0" horzOffset="0"/>
       <hp:outMargin left="141" right="141" top="141" bottom="141"/>
       <hp:inMargin left="0" right="0" top="0" bottom="0"/>
-      <!-- HEADER ROW -->
       <hp:tr row-type="header">
         <hp:tc name="" header="0" hasMargin="1" protect="0" editable="0" dirty="0" borderFillIDRef="9">
           <hp:subList id="" textDirection="HORIZONTAL" lineWrap="BREAK" vertAlign="CENTER" linkListIDRef="0" linkListNextIDRef="0" textWidth="0" textHeight="0" hasTextRef="0" hasNumRef="0">
             <hp:p id="__P_ID__" paraPrIDRef="18" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">
-              <hp:run charPrIDRef="26"><hp:t>연번</hp:t></hp:run>
+              <hp:run charPrIDRef="26">
+                <hp:t>연번</hp:t>
+              </hp:run>
             </hp:p>
           </hp:subList>
           <hp:cellAddr colAddr="0" rowAddr="0"/>
@@ -40,7 +41,9 @@
         <hp:tc name="" header="0" hasMargin="1" protect="0" editable="0" dirty="0" borderFillIDRef="9">
           <hp:subList id="" textDirection="HORIZONTAL" lineWrap="BREAK" vertAlign="CENTER" linkListIDRef="0" linkListNextIDRef="0" textWidth="0" textHeight="0" hasTextRef="0" hasNumRef="0">
             <hp:p id="__P_ID__" paraPrIDRef="18" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">
-              <hp:run charPrIDRef="26"><hp:t>구분</hp:t></hp:run>
+              <hp:run charPrIDRef="26">
+                <hp:t>구분</hp:t>
+              </hp:run>
             </hp:p>
           </hp:subList>
           <hp:cellAddr colAddr="1" rowAddr="0"/>
@@ -51,7 +54,9 @@
         <hp:tc name="" header="0" hasMargin="1" protect="0" editable="0" dirty="0" borderFillIDRef="9">
           <hp:subList id="" textDirection="HORIZONTAL" lineWrap="BREAK" vertAlign="CENTER" linkListIDRef="0" linkListNextIDRef="0" textWidth="0" textHeight="0" hasTextRef="0" hasNumRef="0">
             <hp:p id="__P_ID__" paraPrIDRef="18" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">
-              <hp:run charPrIDRef="26"><hp:t>내용</hp:t></hp:run>
+              <hp:run charPrIDRef="26">
+                <hp:t>내용</hp:t>
+              </hp:run>
             </hp:p>
           </hp:subList>
           <hp:cellAddr colAddr="2" rowAddr="0"/>
@@ -62,7 +67,9 @@
         <hp:tc name="" header="0" hasMargin="1" protect="0" editable="0" dirty="0" borderFillIDRef="9">
           <hp:subList id="" textDirection="HORIZONTAL" lineWrap="BREAK" vertAlign="CENTER" linkListIDRef="0" linkListNextIDRef="0" textWidth="0" textHeight="0" hasTextRef="0" hasNumRef="0">
             <hp:p id="__P_ID__" paraPrIDRef="18" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">
-              <hp:run charPrIDRef="26"><hp:t>비고</hp:t></hp:run>
+              <hp:run charPrIDRef="26">
+                <hp:t>비고</hp:t>
+              </hp:run>
             </hp:p>
           </hp:subList>
           <hp:cellAddr colAddr="3" rowAddr="0"/>
@@ -71,12 +78,13 @@
           <hp:cellMargin left="73" right="73" top="73" bottom="141"/>
         </hp:tc>
       </hp:tr>
-      <!-- BODY ROW (cloned per data row) -->
       <hp:tr row-type="body">
         <hp:tc name="" header="0" hasMargin="1" protect="0" editable="0" dirty="0" borderFillIDRef="10">
           <hp:subList id="" textDirection="HORIZONTAL" lineWrap="BREAK" vertAlign="CENTER" linkListIDRef="0" linkListNextIDRef="0" textWidth="0" textHeight="0" hasTextRef="0" hasNumRef="0">
             <hp:p id="__P_ID__" paraPrIDRef="18" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">
-              <hp:run charPrIDRef="27"><hp:t/></hp:run>
+              <hp:run charPrIDRef="27">
+                <hp:t/>
+              </hp:run>
             </hp:p>
           </hp:subList>
           <hp:cellAddr colAddr="0" rowAddr="__ROW_ADDR__"/>
@@ -87,7 +95,9 @@
         <hp:tc name="" header="0" hasMargin="1" protect="0" editable="0" dirty="0" borderFillIDRef="10">
           <hp:subList id="" textDirection="HORIZONTAL" lineWrap="BREAK" vertAlign="CENTER" linkListIDRef="0" linkListNextIDRef="0" textWidth="0" textHeight="0" hasTextRef="0" hasNumRef="0">
             <hp:p id="__P_ID__" paraPrIDRef="18" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">
-              <hp:run charPrIDRef="27"><hp:t/></hp:run>
+              <hp:run charPrIDRef="27">
+                <hp:t/>
+              </hp:run>
             </hp:p>
           </hp:subList>
           <hp:cellAddr colAddr="1" rowAddr="__ROW_ADDR__"/>
@@ -98,7 +108,9 @@
         <hp:tc name="" header="0" hasMargin="1" protect="0" editable="0" dirty="0" borderFillIDRef="10">
           <hp:subList id="" textDirection="HORIZONTAL" lineWrap="BREAK" vertAlign="CENTER" linkListIDRef="0" linkListNextIDRef="0" textWidth="0" textHeight="0" hasTextRef="0" hasNumRef="0">
             <hp:p id="__P_ID__" paraPrIDRef="22" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">
-              <hp:run charPrIDRef="27"><hp:t/></hp:run>
+              <hp:run charPrIDRef="27">
+                <hp:t/>
+              </hp:run>
             </hp:p>
           </hp:subList>
           <hp:cellAddr colAddr="2" rowAddr="__ROW_ADDR__"/>
@@ -109,7 +121,9 @@
         <hp:tc name="" header="0" hasMargin="1" protect="0" editable="0" dirty="0" borderFillIDRef="10">
           <hp:subList id="" textDirection="HORIZONTAL" lineWrap="BREAK" vertAlign="CENTER" linkListIDRef="0" linkListNextIDRef="0" textWidth="0" textHeight="0" hasTextRef="0" hasNumRef="0">
             <hp:p id="__P_ID__" paraPrIDRef="18" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">
-              <hp:run charPrIDRef="27"><hp:t/></hp:run>
+              <hp:run charPrIDRef="27">
+                <hp:t/>
+              </hp:run>
             </hp:p>
           </hp:subList>
           <hp:cellAddr colAddr="3" rowAddr="__ROW_ADDR__"/>
