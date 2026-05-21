@@ -3,7 +3,7 @@
   <meta>
     <name>schedule</name>
     <description>일정표 (일자/추진내용/담당)</description>
-    <table-width>45585</table-width>
+    <table-width>47849</table-width>
     <row-height header="2363" body="1984" summary="1984"/>
     <styles>
       <table-border borderFillIDRef="4"/>
@@ -14,12 +14,12 @@
     <columns>
       <col index="0" width="9125" align="center"/>
       <col index="1" width="27376" align="justify"/>
-      <col index="2" width="9084" align="center"/>
+      <col index="2" width="11348" align="center"/>
     </columns>
   </meta>
   <sample>
     <hp:tbl id="__TBL_ID__" zOrder="3" numberingType="TABLE" textWrap="TOP_AND_BOTTOM" textFlow="BOTH_SIDES" lock="0" dropcapstyle="None" pageBreak="CELL" repeatHeader="1" rowCnt="__ROW_CNT__" colCnt="3" cellSpacing="0" borderFillIDRef="4" noAdjust="1">
-      <hp:sz width="45585" widthRelTo="ABSOLUTE" height="__TBL_HEIGHT__" heightRelTo="ABSOLUTE" protect="0"/>
+      <hp:sz width="47849" widthRelTo="ABSOLUTE" height="__TBL_HEIGHT__" heightRelTo="ABSOLUTE" protect="0"/>
       <hp:pos treatAsChar="1" affectLSpacing="0" flowWithText="1" allowOverlap="0" holdAnchorAndSO="0" vertRelTo="PARA" horzRelTo="PARA" vertAlign="TOP" horzAlign="LEFT" vertOffset="0" horzOffset="0"/>
       <hp:outMargin left="141" right="141" top="141" bottom="141"/>
       <hp:inMargin left="0" right="0" top="0" bottom="0"/>
@@ -60,7 +60,7 @@
           </hp:subList>
           <hp:cellAddr colAddr="2" rowAddr="0"/>
           <hp:cellSpan colSpan="1" rowSpan="1"/>
-          <hp:cellSz width="9084" height="2363"/>
+          <hp:cellSz width="11348" height="2363"/>
           <hp:cellMargin left="73" right="73" top="73" bottom="141"/>
         </hp:tc>
       </hp:tr>
@@ -89,7 +89,7 @@
           <hp:cellAddr colAddr="1" rowAddr="__ROW_ADDR__"/>
           <hp:cellSpan colSpan="1" rowSpan="1"/>
           <hp:cellSz width="27376" height="1984"/>
-          <hp:cellMargin left="73" right="73" top="73" bottom="141"/>
+          <hp:cellMargin left="573" right="73" top="73" bottom="141"/>
         </hp:tc>
         <hp:tc name="" header="0" hasMargin="1" protect="0" editable="0" dirty="0" borderFillIDRef="10">
           <hp:subList id="" textDirection="HORIZONTAL" lineWrap="BREAK" vertAlign="CENTER" linkListIDRef="0" linkListNextIDRef="0" textWidth="0" textHeight="0" hasTextRef="0" hasNumRef="0">
@@ -101,7 +101,7 @@
           </hp:subList>
           <hp:cellAddr colAddr="2" rowAddr="__ROW_ADDR__"/>
           <hp:cellSpan colSpan="1" rowSpan="1"/>
-          <hp:cellSz width="9084" height="1984"/>
+          <hp:cellSz width="11348" height="1984"/>
           <hp:cellMargin left="73" right="73" top="73" bottom="141"/>
         </hp:tc>
       </hp:tr>

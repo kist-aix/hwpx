@@ -3,7 +3,7 @@
   <meta>
     <name>checklist</name>
     <description>점검표 (번호/점검항목/담당/확인/비고)</description>
-    <table-width>45585</table-width>
+    <table-width>47849</table-width>
     <row-height header="2363" body="1984" summary="1984"/>
     <styles>
       <table-border borderFillIDRef="4"/>
@@ -13,15 +13,15 @@
     </styles>
     <columns>
       <col index="0" width="4596" align="center"/>
-      <col index="1" width="9112" align="center"/>
-      <col index="2" width="20728" align="left"/>
-      <col index="3" width="4596" align="center"/>
-      <col index="4" width="6553" align="center"/>
+      <col index="1" width="22696" align="left"/>
+      <col index="2" width="7144" align="center"/>
+      <col index="3" width="6011" align="center"/>
+      <col index="4" width="7402" align="center"/>
     </columns>
   </meta>
   <sample>
     <hp:tbl id="__TBL_ID__" zOrder="4" numberingType="TABLE" textWrap="TOP_AND_BOTTOM" textFlow="BOTH_SIDES" lock="0" dropcapstyle="None" pageBreak="CELL" repeatHeader="1" rowCnt="__ROW_CNT__" colCnt="5" cellSpacing="0" borderFillIDRef="4" noAdjust="1">
-      <hp:sz width="45585" widthRelTo="ABSOLUTE" height="__TBL_HEIGHT__" heightRelTo="ABSOLUTE" protect="0"/>
+      <hp:sz width="47849" widthRelTo="ABSOLUTE" height="__TBL_HEIGHT__" heightRelTo="ABSOLUTE" protect="0"/>
       <hp:pos treatAsChar="1" affectLSpacing="0" flowWithText="1" allowOverlap="0" holdAnchorAndSO="0" vertRelTo="PARA" horzRelTo="PARA" vertAlign="TOP" horzAlign="LEFT" vertOffset="0" horzOffset="0"/>
       <hp:outMargin left="141" right="141" top="141" bottom="141"/>
       <hp:inMargin left="0" right="0" top="0" bottom="0"/>
@@ -49,7 +49,7 @@
           </hp:subList>
           <hp:cellAddr colAddr="1" rowAddr="0"/>
           <hp:cellSpan colSpan="1" rowSpan="1"/>
-          <hp:cellSz width="9112" height="2363"/>
+          <hp:cellSz width="22696" height="2363"/>
           <hp:cellMargin left="73" right="73" top="73" bottom="141"/>
         </hp:tc>
         <hp:tc name="" header="0" hasMargin="1" protect="0" editable="0" dirty="0" borderFillIDRef="9">
@@ -62,7 +62,7 @@
           </hp:subList>
           <hp:cellAddr colAddr="2" rowAddr="0"/>
           <hp:cellSpan colSpan="1" rowSpan="1"/>
-          <hp:cellSz width="20728" height="2363"/>
+          <hp:cellSz width="7144" height="2363"/>
           <hp:cellMargin left="73" right="73" top="73" bottom="141"/>
         </hp:tc>
         <hp:tc name="" header="0" hasMargin="1" protect="0" editable="0" dirty="0" borderFillIDRef="9">
@@ -75,7 +75,7 @@
           </hp:subList>
           <hp:cellAddr colAddr="3" rowAddr="0"/>
           <hp:cellSpan colSpan="1" rowSpan="1"/>
-          <hp:cellSz width="4596" height="2363"/>
+          <hp:cellSz width="6011" height="2363"/>
           <hp:cellMargin left="73" right="73" top="73" bottom="141"/>
         </hp:tc>
         <hp:tc name="" header="0" hasMargin="1" protect="0" editable="0" dirty="0" borderFillIDRef="9">
@@ -88,7 +88,7 @@
           </hp:subList>
           <hp:cellAddr colAddr="4" rowAddr="0"/>
           <hp:cellSpan colSpan="1" rowSpan="1"/>
-          <hp:cellSz width="6553" height="2363"/>
+          <hp:cellSz width="7402" height="2363"/>
           <hp:cellMargin left="73" right="73" top="73" bottom="141"/>
         </hp:tc>
       </hp:tr>
@@ -116,8 +116,8 @@
           </hp:subList>
           <hp:cellAddr colAddr="1" rowAddr="__ROW_ADDR__"/>
           <hp:cellSpan colSpan="1" rowSpan="1"/>
-          <hp:cellSz width="9112" height="1984"/>
-          <hp:cellMargin left="73" right="73" top="73" bottom="141"/>
+          <hp:cellSz width="22696" height="1984"/>
+          <hp:cellMargin left="573" right="73" top="73" bottom="141"/>
         </hp:tc>
         <hp:tc name="" header="0" hasMargin="1" protect="0" editable="0" dirty="0" borderFillIDRef="10">
           <hp:subList id="" textDirection="HORIZONTAL" lineWrap="BREAK" vertAlign="CENTER" linkListIDRef="0" linkListNextIDRef="0" textWidth="0" textHeight="0" hasTextRef="0" hasNumRef="0">
@@ -129,8 +129,8 @@
           </hp:subList>
           <hp:cellAddr colAddr="2" rowAddr="__ROW_ADDR__"/>
           <hp:cellSpan colSpan="1" rowSpan="1"/>
-          <hp:cellSz width="20728" height="1984"/>
-          <hp:cellMargin left="73" right="73" top="73" bottom="141"/>
+          <hp:cellSz width="7144" height="1984"/>
+          <hp:cellMargin left="573" right="73" top="73" bottom="141"/>
         </hp:tc>
         <hp:tc name="" header="0" hasMargin="1" protect="0" editable="0" dirty="0" borderFillIDRef="10">
           <hp:subList id="" textDirection="HORIZONTAL" lineWrap="BREAK" vertAlign="CENTER" linkListIDRef="0" linkListNextIDRef="0" textWidth="0" textHeight="0" hasTextRef="0" hasNumRef="0">
@@ -142,7 +142,7 @@
           </hp:subList>
           <hp:cellAddr colAddr="3" rowAddr="__ROW_ADDR__"/>
           <hp:cellSpan colSpan="1" rowSpan="1"/>
-          <hp:cellSz width="4596" height="1984"/>
+          <hp:cellSz width="6011" height="1984"/>
           <hp:cellMargin left="73" right="73" top="73" bottom="141"/>
         </hp:tc>
         <hp:tc name="" header="0" hasMargin="1" protect="0" editable="0" dirty="0" borderFillIDRef="10">
@@ -155,7 +155,7 @@
           </hp:subList>
           <hp:cellAddr colAddr="4" rowAddr="__ROW_ADDR__"/>
           <hp:cellSpan colSpan="1" rowSpan="1"/>
-          <hp:cellSz width="6553" height="1984"/>
+          <hp:cellSz width="7402" height="1984"/>
           <hp:cellMargin left="73" right="73" top="73" bottom="141"/>
         </hp:tc>
       </hp:tr>

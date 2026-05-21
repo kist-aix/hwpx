@@ -19,6 +19,8 @@ table_builder.py가 소비하는 <table-template> XML을 추출한다.
   templates/report/header.xml 의 표준 표 스타일로 재매핑된다. build_hwpx.py 가
   표를 항상 report 헤더와 짝짓기 때문에, 재매핑이 없으면 같은 ID 번호가 서로 다른
   서식을 가리켜 글꼴·테두리가 깨진다. 소스의 색/글꼴 디자인은 보고서 표준으로 통일.
+  단, 셀의 문단 여백(paraPr 좌우 margin)은 재매핑 전에 cellMargin 으로 흡수해
+  보존한다 — 한글에서 '문단 여백'으로 준 표 여백도 결과에 반영된다.
 
 Usage:
     python scripts/extract_table_templates.py
@@ -43,6 +45,7 @@ SKILL_DIR = SCRIPT_DIR.parent
 HP = "http://www.hancom.co.kr/hwpml/2011/paragraph"
 HS = "http://www.hancom.co.kr/hwpml/2011/section"
 HH = "http://www.hancom.co.kr/hwpml/2011/head"
+HC = "http://www.hancom.co.kr/hwpml/2011/core"
 
 DEFAULT_HWPX = SKILL_DIR / "assets" / "all_tables_preview.hwpx"
 DEFAULT_OUTDIR = SKILL_DIR / "templates" / "tables"
@@ -99,6 +102,34 @@ def build_align_map(header_root) -> dict:
     return amap
 
 
+def build_margin_map(header_root) -> dict:
+    """header.xml의 paraPrIDRef -> (좌, 우) 문단 여백(HWPUNIT) 매핑.
+
+    문단 여백(<hh:margin>의 hc:left/right)은 normalize_styles 가 paraPr를
+    표준 ID로 재매핑할 때 사라지므로, 추출 시 이 값을 셀의 cellMargin 으로
+    흡수한다. 그래야 한글에서 '문단 여백'으로 준 표 여백도 보존된다.
+    """
+    mmap = {}
+    for pp in header_root.iter(q("paraPr", HH)):
+        pid = pp.get("id")
+        if not pid:
+            continue
+        margin = pp.find(".//" + q("margin", HH))
+        if margin is None:
+            continue
+        vals = {}
+        for side in ("left", "right"):
+            e = margin.find(q(side, HC))
+            raw = e.get("value") if e is not None else None
+            try:
+                vals[side] = int(raw) if raw is not None else 0
+            except ValueError:
+                vals[side] = 0
+        if vals["left"] or vals["right"]:
+            mmap[pid] = (vals["left"], vals["right"])
+    return mmap
+
+
 def row_sig(tr) -> tuple:
     """행의 셀별 borderFillIDRef 튜플 - 머리행/본문행/합계행 판별용 지문."""
     return tuple(tc.get("borderFillIDRef") for tc in tr.findall(q("tc")))
@@ -116,6 +147,28 @@ def _cell_height(tr) -> str:
     return csz.get("height") if csz is not None else "0"
 
 
+def _fold_para_margin(tc, margin_map: dict) -> None:
+    """셀이 참조하는 paraPr의 좌우 문단 여백을 cellMargin 에 더한다.
+
+    normalize_styles 가 paraPrIDRef 를 표준값으로 덮어쓰기 전에 호출해야 한다.
+    """
+    if not margin_map:
+        return
+    p = tc.find(".//" + q("p"))
+    pid = p.get("paraPrIDRef") if p is not None else None
+    left, right = margin_map.get(pid, (0, 0))
+    if not left and not right:
+        return
+    cm = tc.find(q("cellMargin"))
+    if cm is None:
+        return
+    try:
+        cm.set("left", str(int(cm.get("left", "0")) + left))
+        cm.set("right", str(int(cm.get("right", "0")) + right))
+    except (TypeError, ValueError):
+        pass
+
+
 def _normalize_cell(tc, border: str, char: str, para: str) -> None:
     """셀 하나의 테두리·글자·문단 스타일 ID를 표준값으로 치환하고,
     소스에서 따라온 레이아웃 캐시(linesegarray)를 제거한다."""
@@ -130,20 +183,26 @@ def _normalize_cell(tc, border: str, char: str, para: str) -> None:
         ls.getparent().remove(ls)
 
 
-def normalize_styles(tbl, header_tr, body_tr, summary_trs, align_by_col) -> None:
+def normalize_styles(tbl, header_tr, body_tr, summary_trs,
+                     align_by_col, margin_map) -> None:
     """추출한 표의 모든 스타일 ID를 report/header.xml 표준 표 스타일로 재매핑.
 
     소스 한글파일마다 charPr/paraPr/borderFill ID가 가리키는 서식이 다르므로,
     이 단계를 거쳐야 어떤 한글파일에서 뽑은 표든 table_builder.py +
     build_hwpx.py(report 헤더)와 정합한 .xml 이 된다.
+
+    재매핑 직전에 각 셀의 paraPr 문단 여백을 cellMargin 으로 흡수한다 —
+    그렇지 않으면 표준 paraPr 로 덮이며 좌우 여백이 사라진다.
     """
     tbl.set("borderFillIDRef", STD_TABLE_BORDER)
 
     for tc in header_tr.findall(q("tc")):
+        _fold_para_margin(tc, margin_map)
         _normalize_cell(tc, STD_HEADER["border"],
                         STD_HEADER["char"], STD_HEADER["para"])
 
     for tc in body_tr.findall(q("tc")):
+        _fold_para_margin(tc, margin_map)
         addr = tc.find(q("cellAddr"))
         col = addr.get("colAddr") if addr is not None else None
         align = align_by_col.get(col, "center")
@@ -152,11 +211,13 @@ def normalize_styles(tbl, header_tr, body_tr, summary_trs, align_by_col) -> None
 
     for sr in summary_trs:
         for tc in sr.findall(q("tc")):
+            _fold_para_margin(tc, margin_map)
             _normalize_cell(tc, STD_SUMMARY["border"],
                             STD_SUMMARY["char"], STD_SUMMARY["para"])
 
 
-def extract_template(src_tbl, name: str, description: str, align_map: dict):
+def extract_template(src_tbl, name: str, description: str,
+                     align_map: dict, margin_map: dict):
     """원본 hp:tbl 하나를 <table-template> 엘리먼트로 변환.
 
     Returns: (xml_bytes, info_dict)
@@ -221,8 +282,8 @@ def extract_template(src_tbl, name: str, description: str, align_map: dict):
     for tr in summary_trs:
         tr.set("row-type", "summary")
 
-    # 스타일 ID를 report 헤더 표준 표 스타일로 재매핑 (스킬 정합성의 핵심).
-    normalize_styles(tbl, header_tr, body_tr, summary_trs, align_by_col)
+    # 셀 문단 여백 흡수 + 스타일 ID 재매핑 (스킬 정합성의 핵심).
+    normalize_styles(tbl, header_tr, body_tr, summary_trs, align_by_col, margin_map)
 
     # 빌드 시 table_builder.py가 채우는 값은 플레이스홀더로 치환.
     tbl.set("id", "__TBL_ID__")
@@ -308,6 +369,7 @@ def main() -> None:
         sys.exit(1)
 
     align_map = build_align_map(header)
+    margin_map = build_margin_map(header)
 
     sec = section
     if not section.tag == q("sec", HS):
@@ -351,7 +413,7 @@ def main() -> None:
                   f"(권장 형식: 'N. 이름 - 설명')")
 
         try:
-            xml, info = extract_template(tbl, name, desc, align_map)
+            xml, info = extract_template(tbl, name, desc, align_map, margin_map)
         except ValueError as e:
             print(f"  x 표{n} ({name}): {e}", file=sys.stderr)
             continue
