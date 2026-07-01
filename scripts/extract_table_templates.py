@@ -63,8 +63,14 @@ STD_BODY = {"border": "10", "char": "27"}
 STD_BODY_PARA = {"center": "18", "justify": "22", "left": "18", "right": "18"}
 STD_SUMMARY = {"border": "9", "char": "26", "para": "18"}
 
-# "3. budget - 예산표 (...)"  ->  ("budget", "예산표 (...)")
-LABEL_RE = re.compile(r"^\s*\d+\s*[.)]\s*([A-Za-z][\w-]*)\s*[—–-]\s*(.+)$")
+# "3. budget - 예산표 (...)"  ->  ("budget", "예산표 (...)", False)
+# "6. roadmap - 일자별 ... [design]" -> ("roadmap", "일자별 ...", True)
+#   라벨 끝에 [design] (또는 [preserve]) 마커가 있으면 정규화를 건너뛰고
+#   원본 borderFill/charPr/paraPr 디자인을 그대로 sample에 보존한다.
+LABEL_RE = re.compile(
+    r"^\s*\d+\s*[.)]\s*([A-Za-z][\w-]*)\s*[—–-]\s*"
+    r"(.+?)(?:\s*\[(design|preserve)\])?\s*$"
+)
 
 
 def q(tag: str, ns: str = HP) -> str:
@@ -84,11 +90,15 @@ def para_text(p) -> str:
 
 
 def parse_label(text: str):
-    """'N. 이름 - 설명' 라벨에서 (이름, 설명)을 추출. 형식이 아니면 None."""
+    """'N. 이름 - 설명 [design?]' 라벨에서 (이름, 설명, preserve_design)을 추출.
+    형식이 아니면 None."""
     m = LABEL_RE.match(text or "")
     if not m:
         return None
-    return m.group(1), m.group(2).strip()
+    name = m.group(1)
+    desc = m.group(2).strip()
+    preserve = m.group(3) is not None
+    return name, desc, preserve
 
 
 def build_align_map(header_root) -> dict:
@@ -214,6 +224,129 @@ def normalize_styles(tbl, header_tr, body_tr, summary_trs,
             _fold_para_margin(tc, margin_map)
             _normalize_cell(tc, STD_SUMMARY["border"],
                             STD_SUMMARY["char"], STD_SUMMARY["para"])
+
+
+def _collect_used_ids(tbl):
+    """hp:tbl 안에서 참조된 borderFillIDRef / charPrIDRef / paraPrIDRef를 모은다."""
+    bf, cp, pp = set(), set(), set()
+    for el in tbl.iter():
+        for attr, store in (
+            ("borderFillIDRef", bf),
+            ("charPrIDRef", cp),
+            ("paraPrIDRef", pp),
+        ):
+            v = el.get(attr)
+            if v is None:
+                continue
+            try:
+                store.add(int(v))
+            except ValueError:
+                pass
+    return bf, cp, pp
+
+
+def extract_template_preserve_design(src_tbl, name: str, description: str,
+                                      lib_header_root):
+    """디자인 보존 모드: 라이브러리 원본 표를 거의 그대로 sample에 담고
+    의존 bf/cp/pp 정의를 meta/extra-styles 에 자동 추출한다."""
+    tbl = copy.deepcopy(src_tbl)
+    rows = tbl.findall(q("tr"))
+    if not rows:
+        raise ValueError("행이 0개라 표로 인식할 수 없음")
+
+    # row-type 부여: 1행 = header, 나머지 = body. summary는 자동 판정 어렵고,
+    # preserve 모드에서는 build 시 sample 그대로 사용하므로 굳이 분리 불요.
+    rows[0].set("row-type", "header")
+    for tr in rows[1:]:
+        tr.set("row-type", "body")
+
+    # 의존 스타일 ID 수집 후 라이브러리 header.xml에서 정의 복사
+    used_bf, used_cp, used_pp = _collect_used_ids(tbl)
+    lib_bfs = lib_header_root.find(".//" + q("borderFills", HH))
+    lib_cps = lib_header_root.find(".//" + q("charProperties", HH))
+    lib_pps = lib_header_root.find(".//" + q("paraProperties", HH))
+
+    def _pick(group, ids):
+        out = []
+        if group is None:
+            return out
+        for el in group:
+            try:
+                if int(el.get("id")) in ids:
+                    out.append(copy.deepcopy(el))
+            except (TypeError, ValueError):
+                pass
+        return out
+
+    extra_bf = _pick(lib_bfs, used_bf)
+    extra_cp = _pick(lib_cps, used_cp)
+    extra_pp = _pick(lib_pps, used_pp)
+
+    # 메타 정보
+    sz = tbl.find(q("sz"))
+    table_width = sz.get("width") if sz is not None else "0"
+
+    columns = []
+    for tc in rows[0].findall(q("tc")):
+        addr = tc.find(q("cellAddr"))
+        csz = tc.find(q("cellSz"))
+        columns.append({
+            "index": addr.get("colAddr") if addr is not None else str(len(columns)),
+            "width": csz.get("width") if csz is not None else "0",
+        })
+
+    # 빌드 시 채워질 자리표시자 (build_hwpx + table_builder가 처리)
+    tbl.set("id", "__TBL_ID__")
+    tbl.set("rowCnt", "__ROW_CNT__")
+    if sz is not None:
+        sz.set("height", "__TBL_HEIGHT__")
+
+    # <table-template> 조립
+    root = etree.Element("table-template",
+                          nsmap={"hp": HP, "hh": HH, "hc": HC})
+    meta = etree.SubElement(root, "meta")
+    etree.SubElement(meta, "name").text = name
+    etree.SubElement(meta, "description").text = description
+    etree.SubElement(meta, "preserve-design").text = "true"
+    etree.SubElement(meta, "table-width").text = table_width
+
+    # row-height: 각 행마다 첫 셀 height를 기록 (informational)
+    rh = etree.SubElement(meta, "row-height")
+    for ri, tr in enumerate(rows):
+        first_tc = tr.find(q("tc"))
+        csz = first_tc.find(q("cellSz")) if first_tc is not None else None
+        h = csz.get("height") if csz is not None else "0"
+        rh.set("header" if ri == 0 else f"body-{ri}", h)
+
+    cols_el = etree.SubElement(meta, "columns")
+    for col in columns:
+        _set_attrs(etree.SubElement(cols_el, "col"),
+                   index=col["index"], width=col["width"], align="center")
+
+    extra = etree.SubElement(meta, "extra-styles")
+    g_bf = etree.SubElement(extra, "border-fills")
+    for el in extra_bf:
+        g_bf.append(el)
+    g_cp = etree.SubElement(extra, "char-prs")
+    for el in extra_cp:
+        g_cp.append(el)
+    g_pp = etree.SubElement(extra, "para-prs")
+    for el in extra_pp:
+        g_pp.append(el)
+
+    sample = etree.SubElement(root, "sample")
+    sample.append(tbl)
+
+    etree.indent(root, space="  ")
+    xml = etree.tostring(root, pretty_print=True, xml_declaration=True,
+                         encoding="UTF-8")
+    info = {
+        "rows": len(rows), "cols": len(columns),
+        "header": 1, "body": len(rows) - 1, "summary": 0,
+        "width": int(table_width) if str(table_width).isdigit() else 0,
+        "preserve": True,
+    }
+    return xml, info
 
 
 def extract_template(src_tbl, name: str, description: str,
@@ -405,15 +538,21 @@ def main() -> None:
     generated = []
     for n, (label, tbl) in enumerate(pairs, 1):
         parsed = parse_label(label) if label else None
+        preserve = False
         if parsed:
-            name, desc = parsed
+            name, desc, preserve = parsed
         else:
             name, desc = f"table{n}", (label or "").strip()
             print(f"  ! 표{n}: 라벨 해석 실패 -> 이름을 '{name}'로 지정 "
                   f"(권장 형식: 'N. 이름 - 설명')")
 
         try:
-            xml, info = extract_template(tbl, name, desc, align_map, margin_map)
+            if preserve:
+                xml, info = extract_template_preserve_design(
+                    tbl, name, desc, lib_header_root=header)
+            else:
+                xml, info = extract_template(tbl, name, desc,
+                                              align_map, margin_map)
         except ValueError as e:
             print(f"  x 표{n} ({name}): {e}", file=sys.stderr)
             continue
@@ -423,9 +562,12 @@ def main() -> None:
             out.write_bytes(xml)
         generated.append(name)
         tag = " (dry-run)" if args.dry_run else ""
+        mode = " [design]" if info.get("preserve") else ""
+        body_str = (str(info["body"]) if info.get("preserve")
+                    else f"{info['body']}->1")
         print(f"  o {name:12s} {info['rows']}행x{info['cols']}열  "
-              f"(머리 {info['header']} / 본문 {info['body']}->1 / "
-              f"합계 {info['summary']})  -> {out.name}{tag}")
+              f"(머리 {info['header']} / 본문 {body_str} / "
+              f"합계 {info['summary']}){mode}  -> {out.name}{tag}")
         if info["width"] > REPORT_BODY_WIDTH:
             print(f"    ! 경고: 표 너비 {info['width']} > 보고서 본문폭 "
                   f"{REPORT_BODY_WIDTH} — 한글에서 열 너비를 줄여 다시 추출하세요",

@@ -27,8 +27,15 @@ OUTPUT_DIR = Path("output")
 
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from table_builder import build_table_paragraph, list_templates
+from table_builder import (
+    build_table_paragraph,
+    is_preserve_design,
+    list_templates,
+    load_template,
+    merge_template_styles_into_header,
+)
 from build_hwpx import build
+from lxml import etree
 
 
 # 템플릿별 샘플 데이터
@@ -69,6 +76,17 @@ SAMPLE_DATA = {
             ["3", "결재권자 승인 완료 여부", "담당자", "완료", "-"],
         ],
     },
+    "roadmap": {
+        # preserve-design 표 — headers는 헤더 행 9개 셀(콘텐츠 5 + spacer 4) 순서,
+        # data는 본문 행마다 콘텐츠 5칸 (sample 구조와 1:1)
+        "headers": [
+            "1단계", "", "2단계", "", "3단계", "", "4단계", "", "5단계",
+        ],
+        "data": [
+            ["기획·설계", "공모·접수", "심사·평가", "본선·시상", "성과확산"],
+            ["’26.4월", "’26.5월", "’26.6월", "’26.7월", "’26.8월"],
+        ],
+    },
 }
 
 
@@ -87,14 +105,16 @@ def get_sample_data(template_name: str) -> dict:
     }
 
 
-def build_preview_section(template_name: str) -> str:
+def build_preview_section(template_name: str, id_mapping: dict | None = None) -> str:
     """표 템플릿을 포함한 section0.xml 문자열 생성."""
     sample = get_sample_data(template_name)
 
     table_para = build_table_paragraph(
         template=template_name,
         data=sample["data"],
+        headers=sample.get("headers"),
         summary=sample.get("summary"),
+        id_mapping=id_mapping,
         start_id=1000000050,
     )
 
@@ -143,7 +163,25 @@ def preview_single(template_name: str, output_path: Path) -> None:
     import tempfile
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    section_xml = build_preview_section(template_name)
+
+    # preserve-design 표는 보고서 header.xml에 lib 스타일을 머지한
+    # 패치 header를 사용해야 디자인이 깨지지 않는다.
+    header_override = None
+    id_mapping = None
+    patched_header_path = None
+    if is_preserve_design(load_template(template_name)):
+        rep_header_path = SKILL_DIR / "templates" / "report" / "header.xml"
+        rep_header = etree.parse(str(rep_header_path))
+        id_mapping = merge_template_styles_into_header(template_name, rep_header)
+        with tempfile.NamedTemporaryFile(
+            mode="wb", suffix=".xml", delete=False
+        ) as f:
+            rep_header.write(f, xml_declaration=True,
+                             encoding="UTF-8", standalone=True)
+            patched_header_path = Path(f.name)
+        header_override = patched_header_path
+
+    section_xml = build_preview_section(template_name, id_mapping=id_mapping)
 
     with tempfile.NamedTemporaryFile(
         mode="w", suffix=".xml", delete=False, encoding="utf-8"
@@ -154,7 +192,7 @@ def preview_single(template_name: str, output_path: Path) -> None:
     try:
         build(
             template="report",
-            header_override=None,
+            header_override=header_override,
             section_override=section_path,
             title=f"{template_name} 표 템플릿 미리보기",
             creator="preview_table.py",
@@ -162,6 +200,8 @@ def preview_single(template_name: str, output_path: Path) -> None:
         )
     finally:
         section_path.unlink(missing_ok=True)
+        if patched_header_path is not None:
+            patched_header_path.unlink(missing_ok=True)
 
 
 def main() -> None:

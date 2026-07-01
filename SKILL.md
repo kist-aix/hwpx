@@ -428,6 +428,57 @@ python3 "$SKILL_DIR/scripts/extract_table_templates.py" --prune
 
 > **셀 여백 주의** — 셀 안쪽 여백은 한글에서 *표/셀 속성 → 안 여백*으로 준다. *문단 모양 → 여백*으로 준 값은 `paraPr`(스타일)에 저장돼 정규화 때 사라진다. 구조 속성인 `<hp:cellMargin>`만 추출 시 보존된다.
 
+#### 디자인 보존 모드 (`[design]` 마커)
+
+스타일 정규화는 보통 합리적이지만, **마일스톤·로드맵·카드형 표처럼 셀마다 다른 borderFill·색·폰트로 시각화하는 표**는 정규화하면 디자인이 평준화되어 의도가 사라진다(spacer 셀까지 헤더 회색으로 칠해지거나, 본문 N행이 1행으로 합쳐지는 등). 그런 표는 라벨 끝에 `[design]` (또는 `[preserve]`) 마커를 둔다.
+
+```
+6. roadmap - 일자별 진행일정 로드맵 [design]
+```
+
+마커가 있으면 추출 결과가 달라진다:
+- `meta/preserve-design`이 `true`로 기록
+- 모든 본문 행을 그대로 보존 (`본문 N->1` 정규화 안 함)
+- 표가 참조하는 모든 `borderFill`·`charPr`·`paraPr` 정의를 라이브러리 `header.xml`에서 자동 추출해 `meta/extra-styles`에 함께 저장
+- `sample`은 라이브러리 원본 ID 그대로 — 스타일 평준화 없음
+
+빌드 시점에는 `table_builder.merge_template_styles_into_header()`가 이 `extra-styles`를 보고서 `header.xml`에 새 ID로 머지하고, `build_table*(template, ..., id_mapping=mapping)`이 sample의 ID 참조를 매핑된 ID로 치환한다. 보고서 빌더 패턴:
+
+```python
+from lxml import etree
+from table_builder import build_table_paragraph, merge_template_styles_into_header
+
+# 1) 보고서 header.xml에 디자인 보존 표의 의존 스타일을 머지
+rep_header = etree.parse("$SKILL_DIR/templates/report/header.xml")
+mapping = merge_template_styles_into_header("roadmap", rep_header)
+rep_header.write("/tmp/patched_header.xml", xml_declaration=True,
+                 encoding="UTF-8", standalone=True)
+
+# 2) 표 빌드 (preserve-design 모드는 build_table 안에서 자동 처리)
+#    headers: header-row 셀 수만큼(스페이서 포함, 빈 문자열로) 채운 list
+#    data:    body 행 수만큼, 각 row는 그 행의 셀 텍스트 list
+table_xml = build_table_paragraph(
+    template="roadmap",
+    headers=["1단계", "", "2단계", "", "3단계", "", "4단계", "", "5단계"],
+    data=[
+        ["계획 수립", "공모·접수", "심사·평가", "본선·시상", "성과 확산"],
+        ["’26. 6월", "’26. 7~8월", "’26. 9~10월", "’26. 11월", "’26. 12월"],
+    ],
+    id_mapping=mapping,
+    start_id=1000000200,
+)
+
+# 3) build_hwpx.py에 --header /tmp/patched_header.xml 로 전달
+```
+
+`preview_table.py`는 `preserve-design=true` 템플릿을 자동 감지해 위 단계를 알아서 수행한다. 디자인 보존 표의 미리보기 데이터는 `SAMPLE_DATA` 딕셔너리에서 `"headers": [...], "data": [[...], ...]` 형태로 정의한다.
+
+**사용 시 주의** (preserve-design 모드 한정):
+
+- `merge_template_styles_into_header()`는 **같은 header tree에 한 번만 호출**한다(멱등하지 않음). 두 번 호출하면 lib 정의가 중복 추가된다. 한 보고서 빌드 흐름에서 한 번만 부르면 안전.
+- `data`/`headers` 행·셀 수는 sample 구조와 **정확히 일치**시킨다. 부족하면 해당 셀은 **빈 셀로 출력**된다(원본 placeholder 텍스트가 새지 않도록 안전 디폴트). 행 수를 일부러 줄이고 싶으면 한글에서 라이브러리 표를 수정한 뒤 재추출한다.
+- 라이브러리 라벨의 `[design]` 마커는 **한글에서 라이브러리 편집 시에도 유지**해야 한다. 마커가 지워지면 다음 `extract` 때 정규화 경로로 분류돼 디자인이 평준화된다.
+
 ---
 
 ## header.xml 수정 가이드
